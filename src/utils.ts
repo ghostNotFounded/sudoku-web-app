@@ -76,7 +76,7 @@ export function createSudokuBoard(): number[][] {
   for (let row of board) {
     let newRow: number[] = [];
     for (let num of row) {
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.02) {
         // Randomly decide whether to keep the number or make it empty
         newRow.push(0); // Add empty cell
       } else {

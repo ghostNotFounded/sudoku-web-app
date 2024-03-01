@@ -61,6 +61,8 @@ function App() {
         const srow = Math.floor(currPos.row / 3) * 3;
         const scol = Math.floor(currPos.col / 3) * 3;
 
+        const val = grid[currPos.row][currPos.col];
+
         const subgrid =
           row >= srow && row < srow + 3 && col >= scol && col < scol + 3;
 
@@ -81,7 +83,12 @@ function App() {
               row === currPos.row || col === currPos.col || subgrid
                 ? " selected"
                 : ""
-            }${row === currPos.row && col === currPos.col ? " curr" : ""}${
+            }${
+              (val === cell && val !== 0) ||
+              (row === currPos.row && col === currPos.col)
+                ? " curr"
+                : ""
+            }${
               initialNumber(originalGrid, row, col) || message.length !== 0
                 ? " original"
                 : ""
@@ -114,10 +121,12 @@ function App() {
 
     if (mistakes >= 2) {
       setMessage("Oops! Too many mistakes, try again!");
+      setGameFinished(true);
     }
 
     if (completedSudoku(grid)) {
       setMessage("🎉 You solved the Sudoku! 🎉");
+      setGameFinished(true);
     }
   };
 
@@ -140,6 +149,10 @@ function App() {
     setMessage("");
 
     setMistakes(0);
+
+    setGameFinished(false);
+
+    setTime(0);
   };
 
   const handleErase = () => {
