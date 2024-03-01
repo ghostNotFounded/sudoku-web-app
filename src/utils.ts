@@ -76,7 +76,7 @@ export function createSudokuBoard(): number[][] {
   for (let row of board) {
     let newRow: number[] = [];
     for (let num of row) {
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.02) {
         // Randomly decide whether to keep the number or make it empty
         newRow.push(0); // Add empty cell
       } else {
@@ -89,7 +89,7 @@ export function createSudokuBoard(): number[][] {
   return newBoard; // Return the initial Sudoku board
 }
 
-export function isValidSudokuInput(
+export function isValidSudoku(
   board: number[][],
   row: number,
   col: number,
@@ -128,9 +128,13 @@ export function completedSudoku(board: number[][]): boolean {
     for (let col = 0; col < board.length; col++) {
       if (board[row][col] === 0) return false;
 
-      if (!isValidSudokuInput(board, row, col, board[row][col])) return false;
+      if (!isValidSudoku(board, row, col, board[row][col])) return false;
     }
   }
 
   return true;
+}
+
+export function initialNumber(grid: number[][], row: number, col: number) {
+  return grid[row][col] !== 0;
 }

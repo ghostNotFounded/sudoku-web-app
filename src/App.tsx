@@ -4,10 +4,20 @@ import "./App.css";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { FaEraser } from "react-icons/fa";
 
-import { createSudokuBoard } from "./utils";
+import {
+  completedSudoku,
+  createSudokuBoard,
+  initialNumber,
+  isValidSudoku,
+} from "./utils";
 
 function App() {
-  const [grid, setGrid] = useState<number[][]>(createSudokuBoard());
+  const initialGrid = createSudokuBoard();
+  const [grid, setGrid] = useState<number[][]>(initialGrid);
+  const [originalGrid, setOriginalGrid] = useState<number[][]>(() =>
+    JSON.parse(JSON.stringify(initialGrid))
+  );
+
   const [currPos, setCurrPos] = useState<{ row: number; col: number }>({
     row: 0,
     col: 0,
@@ -17,7 +27,9 @@ function App() {
   const [message, setMessage] = useState<string>("");
 
   const handleClick = (row: number, col: number) => {
-    setCurrPos({ row, col });
+    if (!initialNumber(originalGrid, row, col) && message.length === 0) {
+      setCurrPos({ row, col });
+    }
   };
 
   const divs: JSX.Element[] = [];
@@ -41,12 +53,19 @@ function App() {
         innerDivs.push(
           <div
             onClick={() => handleClick(row, col)}
+            style={{
+              color: `${isValidSudoku(grid, row, col, cell) ? "white" : "red"}`,
+            }}
             key={row + col * 3}
-            className={`inner-box${cell === 0 ? "" : " initial"}${
+            className={`inner-box${
               row === currPos.row || col === currPos.col || subgrid
                 ? " selected"
                 : ""
-            }${row === currPos.row && col === currPos.col ? " curr" : ""}`}
+            }${row === currPos.row && col === currPos.col ? " curr" : ""}${
+              initialNumber(originalGrid, row, col) || message.length !== 0
+                ? " original"
+                : ""
+            }`}
           >
             {cell === 0 ? null : <span>{cell}</span>}
           </div>
@@ -61,25 +80,45 @@ function App() {
     );
   }
 
+  const handleOptionClick = (num: number) => {
+    if (message.length === 0) {
+      const newGrid = [...grid];
+      newGrid[currPos.row][currPos.col] = num;
+
+      setGrid(newGrid);
+    }
+
+    if (completedSudoku(grid)) {
+      setMessage("🎉 You solved the Sudoku! 🎉");
+    }
+  };
+
   const options: JSX.Element[] = [];
 
   for (let i = 0; i < 9; i++) {
     options.push(
-      <div key={i} className="option">
+      <div key={i} className="option" onClick={() => handleOptionClick(i + 1)}>
         {i + 1}
       </div>
     );
   }
 
   const handleReset = () => {
-    setGrid(() => createSudokuBoard());
+    const newGrid = createSudokuBoard();
+    setGrid(() => newGrid);
+
+    setOriginalGrid(() => JSON.parse(JSON.stringify(newGrid)));
+
+    setMessage("");
   };
 
   const handleErase = () => {
-    const newGrid = [...grid];
-    newGrid[currPos.row][currPos.col] = 0;
+    if (!initialNumber(originalGrid, currPos.row, currPos.col)) {
+      const newGrid = [...grid];
+      newGrid[currPos.row][currPos.col] = 0;
 
-    setGrid(newGrid);
+      setGrid(newGrid);
+    }
   };
 
   return (
