@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import { MdOutlineRestartAlt } from "react-icons/md";
@@ -9,6 +9,7 @@ import {
   createSudokuBoard,
   initialNumber,
   isValidSudoku,
+  timeFormatter,
 } from "./utils";
 
 function App() {
@@ -23,8 +24,21 @@ function App() {
     col: 0,
   });
 
-  // @ts-ignore
   const [message, setMessage] = useState<string>("");
+  const [mistakes, setMistakes] = useState<number>(0);
+
+  const [gameFinished, setGameFinished] = useState<boolean>(false);
+  const [time, setTime] = useState<number>(0);
+
+  useEffect(() => {
+    let timer: number;
+    if (!gameFinished) {
+      timer = setTimeout(() => {
+        setTime((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }); // Added gameFinished as a dependency
 
   const handleClick = (row: number, col: number) => {
     if (!initialNumber(originalGrid, row, col) && message.length === 0) {
@@ -54,7 +68,13 @@ function App() {
           <div
             onClick={() => handleClick(row, col)}
             style={{
-              color: `${isValidSudoku(grid, row, col, cell) ? "white" : "red"}`,
+              color: `${
+                !isValidSudoku(grid, row, col, cell)
+                  ? "red"
+                  : initialNumber(originalGrid, row, col)
+                  ? "yellow"
+                  : "white"
+              }`,
             }}
             key={row + col * 3}
             className={`inner-box${
@@ -82,10 +102,18 @@ function App() {
 
   const handleOptionClick = (num: number) => {
     if (message.length === 0) {
+      if (!isValidSudoku(grid, currPos.row, currPos.col, num)) {
+        setMistakes((prev) => prev + 1);
+      }
+
       const newGrid = [...grid];
       newGrid[currPos.row][currPos.col] = num;
 
       setGrid(newGrid);
+    }
+
+    if (mistakes >= 2) {
+      setMessage("Oops! Too many mistakes, try again!");
     }
 
     if (completedSudoku(grid)) {
@@ -110,6 +138,8 @@ function App() {
     setOriginalGrid(() => JSON.parse(JSON.stringify(newGrid)));
 
     setMessage("");
+
+    setMistakes(0);
   };
 
   const handleErase = () => {
@@ -128,13 +158,28 @@ function App() {
         <div className="game">{divs}</div>
 
         <div className="options-bar">
+          <div className="stats">
+            <p>
+              <span style={{ color: "red" }}>Mistakes: </span>
+              <span>{mistakes} / 3</span>
+            </p>
+            <p>
+              <span style={{ color: "cyan" }}>Time: </span>
+              <span>{timeFormatter(time)}</span>
+            </p>
+          </div>
+
           <div className="options">{options}</div>
 
           <div className="btns">
             <button onClick={handleReset} aria-label="Restart">
               <MdOutlineRestartAlt size={24} />
             </button>
-            <button onClick={handleErase} aria-label="Restart">
+            <button
+              onClick={handleErase}
+              aria-label="Restart"
+              disabled={message.length !== 0}
+            >
               <FaEraser size={24} />
             </button>
           </div>

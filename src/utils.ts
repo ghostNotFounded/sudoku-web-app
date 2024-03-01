@@ -76,7 +76,7 @@ export function createSudokuBoard(): number[][] {
   for (let row of board) {
     let newRow: number[] = [];
     for (let num of row) {
-      if (Math.random() < 0.02) {
+      if (Math.random() < 0.5) {
         // Randomly decide whether to keep the number or make it empty
         newRow.push(0); // Add empty cell
       } else {
@@ -137,4 +137,11 @@ export function completedSudoku(board: number[][]): boolean {
 
 export function initialNumber(grid: number[][], row: number, col: number) {
   return grid[row][col] !== 0;
+}
+
+export function timeFormatter(time: number) {
+  const minutes = String(Math.floor(time / 60)).padStart(2, "0"); // Calculate minutes
+  const seconds = String(time % 60).padStart(2, "0"); // Calculate seconds
+
+  return `${minutes}:${seconds}`; // Return formatted time
 }
