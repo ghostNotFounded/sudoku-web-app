@@ -108,7 +108,10 @@ function App() {
   }
 
   const handleOptionClick = (num: number) => {
-    if (message.length === 0) {
+    if (
+      message.length === 0 &&
+      !initialNumber(originalGrid, currPos.row, currPos.col)
+    ) {
       if (!isValidSudoku(grid, currPos.row, currPos.col, num)) {
         setMistakes((prev) => prev + 1);
       }
@@ -119,13 +122,13 @@ function App() {
       setGrid(newGrid);
     }
 
-    if (mistakes >= 2) {
-      setMessage("Oops! Too many mistakes, try again!");
+    if (completedSudoku(grid)) {
+      setMessage("🎉 You solved the Sudoku! 🎉");
       setGameFinished(true);
     }
 
-    if (completedSudoku(grid)) {
-      setMessage("🎉 You solved the Sudoku! 🎉");
+    if (mistakes >= 2) {
+      setMessage("Oops! Too many mistakes, try again!");
       setGameFinished(true);
     }
   };
@@ -177,7 +180,7 @@ function App() {
               <span>{mistakes} / 3</span>
             </p>
             <p>
-              <span style={{ color: "cyan" }}>Time: </span>
+              <span style={{ color: "yellow" }}>Time: </span>
               <span>{timeFormatter(time)}</span>
             </p>
           </div>
