@@ -191,14 +191,14 @@ function App() {
 
           <div className="btns">
             <button onClick={handleReset} aria-label="Restart">
-              <MdOutlineRestartAlt size={24} />
+              <MdOutlineRestartAlt size={20} />
             </button>
             <button
               onClick={handleErase}
               aria-label="Restart"
               disabled={message.length !== 0}
             >
-              <FaEraser size={24} />
+              <FaEraser size={20} />
             </button>
           </div>
         </div>
