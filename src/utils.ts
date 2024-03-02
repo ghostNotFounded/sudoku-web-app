@@ -1,43 +1,28 @@
-// Function to create a solved Sudoku board
 export function createSudokuBoard(): number[][] {
-  // Create a 9x9 array filled with zeros
   const board: number[][] = new Array(9)
     .fill(null)
     .map(() => new Array(9).fill(0));
 
-  // Function to check if a number can be placed in a certain position
   function isValid(
     board: number[][],
     row: number,
     col: number,
     num: number
   ): boolean {
-    // Check row
     for (let i = 0; i < 9; i++) {
-      if (board[row][i] === num) {
-        return false;
-      }
+      if (board[row][i] === num) return false;
+      if (board[i][col] === num) return false;
     }
-    // Check column
-    for (let i = 0; i < 9; i++) {
-      if (board[i][col] === num) {
-        return false;
-      }
-    }
-    // Check subgrid
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = startRow; i < startRow + 3; i++) {
       for (let j = startCol; j < startCol + 3; j++) {
-        if (board[i][j] === num) {
-          return false;
-        }
+        if (board[i][j] === num) return false;
       }
     }
     return true;
   }
 
-  // Function to solve the Sudoku board using backtracking
   function solve(board: number[][]): boolean {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -46,9 +31,7 @@ export function createSudokuBoard(): number[][] {
           for (let num of shuffledNums) {
             if (isValid(board, row, col, num)) {
               board[row][col] = num;
-              if (solve(board)) {
-                return true;
-              }
+              if (solve(board)) return true;
               board[row][col] = 0;
             }
           }
@@ -59,7 +42,6 @@ export function createSudokuBoard(): number[][] {
     return true;
   }
 
-  // Shuffle function
   function shuffle(array: number[]): number[] {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -68,25 +50,18 @@ export function createSudokuBoard(): number[][] {
     return array;
   }
 
-  // Solve the Sudoku board
   solve(board);
 
   let newBoard: number[][] = [];
-
   for (let row of board) {
     let newRow: number[] = [];
     for (let num of row) {
-      if (Math.random() < 0.5) {
-        // Randomly decide whether to keep the number or make it empty
-        newRow.push(0); // Add empty cell
-      } else {
-        newRow.push(num); // Keep the number
-      }
+      newRow.push(Math.random() < 0.5 ? 0 : num);
     }
     newBoard.push(newRow);
   }
 
-  return newBoard; // Return the initial Sudoku board
+  return newBoard;
 }
 
 export function isValidSudoku(
@@ -95,31 +70,17 @@ export function isValidSudoku(
   col: number,
   num: number
 ): boolean {
-  // Check row
   for (let i = 0; i < 9; i++) {
-    if (board[row][i] === num && i !== col) {
-      return false;
-    }
+    if (board[row][i] === num && i !== col) return false;
+    if (board[i][col] === num && i !== row) return false;
   }
-
-  // Check column
-  for (let i = 0; i < 9; i++) {
-    if (board[i][col] === num && i !== row) {
-      return false;
-    }
-  }
-
-  // Check subgrid
   const startRow = Math.floor(row / 3) * 3;
   const startCol = Math.floor(col / 3) * 3;
   for (let i = startRow; i < startRow + 3; i++) {
     for (let j = startCol; j < startCol + 3; j++) {
-      if (board[i][j] === num && i !== row && j !== col) {
-        return false;
-      }
+      if (board[i][j] === num && i !== row && j !== col) return false;
     }
   }
-
   return true;
 }
 
@@ -127,11 +88,9 @@ export function completedSudoku(board: number[][]): boolean {
   for (let row = 0; row < board.length; row++) {
     for (let col = 0; col < board.length; col++) {
       if (board[row][col] === 0) return false;
-
       if (!isValidSudoku(board, row, col, board[row][col])) return false;
     }
   }
-
   return true;
 }
 
@@ -140,8 +99,7 @@ export function initialNumber(grid: number[][], row: number, col: number) {
 }
 
 export function timeFormatter(time: number) {
-  const minutes = String(Math.floor(time / 60)).padStart(2, "0"); // Calculate minutes
-  const seconds = String(time % 60).padStart(2, "0"); // Calculate seconds
-
-  return `${minutes}:${seconds}`; // Return formatted time
+  const minutes = String(Math.floor(time / 60)).padStart(2, "0");
+  const seconds = String(time % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
