@@ -113,7 +113,14 @@ function App() {
       !initialNumber(originalGrid, currPos.row, currPos.col)
     ) {
       if (!isValidSudoku(grid, currPos.row, currPos.col, num)) {
-        setMistakes((prev) => prev + 1);
+        setMistakes((prev) => {
+          if (prev + 1 >= 3) {
+            setMessage("Oops! Too many mistakes, try again!");
+            setGameFinished(true);
+          }
+
+          return prev + 1;
+        });
       }
 
       const newGrid = [...grid];
@@ -124,11 +131,6 @@ function App() {
 
     if (completedSudoku(grid)) {
       setMessage("🎉 You solved the Sudoku! 🎉");
-      setGameFinished(true);
-    }
-
-    if (mistakes >= 2) {
-      setMessage("Oops! Too many mistakes, try again!");
       setGameFinished(true);
     }
   };
