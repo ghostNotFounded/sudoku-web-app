@@ -11,7 +11,7 @@ import {
 function App() {
   const initialGrid = createSudokuBoard();
   const [grid, setGrid] = useState<number[][]>(initialGrid);
-  const [originalGrid] = useState<number[][]>(() =>
+  const [originalGrid, setOriginalGrid] = useState<number[][]>(() =>
     JSON.parse(JSON.stringify(initialGrid))
   );
   const [currPos, setCurrPos] = useState<{ row: number; col: number }>({
@@ -62,7 +62,10 @@ function App() {
 
   const handleReset = () => {
     const newGrid = createSudokuBoard();
+
     setGrid(newGrid);
+    setOriginalGrid(() => JSON.parse(JSON.stringify(newGrid)));
+
     setMessage("");
     setMistakes(0);
     setGameFinished(false);
