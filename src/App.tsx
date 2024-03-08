@@ -31,7 +31,7 @@ function App() {
       }, 1000);
     }
     return () => clearTimeout(timer);
-  }, [gameFinished]);
+  });
 
   const handleClick = (row: number, col: number) => {
     if (!initialNumber(originalGrid, row, col) && !message) {
